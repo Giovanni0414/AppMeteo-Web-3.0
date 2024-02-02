@@ -1,0 +1,104 @@
+﻿@*
+    
+*@
+@{
+    ViewData["Title"] = "Meteo";
+    Layout = "_LayoutMeteo";
+}
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+
+
+<div class="container mt-5 text-center mb-4">
+    <h4 class="text-center">Cerca la citta</h4>
+    <input type="text" id="cercaCitta" class="form-control w-50 mx-auto" placeholder="Inserisci la città" />
+
+    <button class="btn btn-primary mt-2" id="btnCercaCitta">Cerca</button>
+</div>
+<div id="risultatiMeteo">
+    <h2 class="text-center" id="cittaCercata"></h2>
+    <h3 class="text-center" id="temperatura"></h3>
+    <h4 class="text-center" id="previsioni"></h4>
+
+    
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        
+        $('#btnCercaCitta').on('click', function () {
+            
+            var risultatiMeteo = document.getElementById('risultatiMeteo');
+            var singoliRisultati = risultatiMeteo.children;
+
+            for (var i = 0; i < singoliRisultati.length; i++) {
+                singoliRisultati[i].textContent = '';
+            }
+
+            var cittaDaCercare = $('#cercaCitta').val();
+
+            if (cittaDaCercare !== "") 
+            {
+
+                $.ajax({
+                    url: '/api/ApiMeteo/get-meteo',
+                    method: 'GET',
+                    data: { cittaDaCercare: cittaDaCercare },
+                    success: function (response) {
+
+                        var temperatura = response[0];
+                        var meteo = response[1];
+                        var idUtente = sessionStorage.getItem('id');
+
+                        $('#cittaCercata').text(cittaDaCercare);
+                        $('#temperatura').text(temperatura + " °");
+                        $('#previsioni').text(meteo);
+
+                        // Svuota l'input
+                        $('#cercaCitta').val('');
+
+
+                        inserisciDatiUtente(cittaDaCercare, temperatura, meteo, idUtente);
+                    },
+                    error: function (error) {
+                        console.error('Errore nella chiamata API', error.responseText);
+                        $('#cittaCercata').text("Nessuna città trovata");
+                    }
+                });
+
+            }
+            else 
+            {
+                $('#cittaCercata').text("Non hai cercato nessuna città");
+            }
+
+            
+        });
+
+        function inserisciDatiUtente(citta, temperatura, meteo, idUtente) {
+            $.ajax({
+                url: '/api/Db/InserisciDatiUtente',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    
+                    citta: citta,
+                    temperatura: temperatura,
+                    meteo: meteo,
+                    idUtente: idUtente
+                    
+                }),
+                success: function (response) {
+                    console.log('Dati utente inseriti correttamente nel database.');
+                    
+                },
+                error: function (error) {
+                    console.error('Errore durante l\'inserimento dei dati utente nel database:', error.responseText);
+                }
+            });
+        }
+    });
+</script>
+

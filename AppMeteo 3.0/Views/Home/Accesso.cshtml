@@ -1,0 +1,94 @@
+﻿<style>
+    /* Stile personalizzato per gli input */
+    .form-control {
+        border: none;
+        border-radius: 0;
+        border-bottom: 1px solid #ced4da;
+        background-color: transparent;
+        box-shadow: none;
+        outline: none;
+    }
+
+        .form-control:focus {
+            border-color: #495057;
+        }
+</style>
+
+<div class="container-lg">
+    <h1 class="text-center">Benvenuto</h1>
+    <div class="my-4">
+        <h4 class="text-center">Accedi</h4>
+    </div>
+
+    <div class="mb-3 container-md" style="max-width: 400px;">
+        <input type="text" class="form-control txtC" id="username" placeholder="Nome utente" required>
+    </div>
+
+    <div class="mb-3 container-md" style="max-width: 400px;">
+        <div class="input-group">
+            <input type="password" class="form-control txtC" id="passwordInput" placeholder="Password" required>
+            <button class="btn " type="button" id="togglePassword">
+                <lord-icon src="https://cdn.lordicon.com/vfczflna.json"
+                           trigger="hover"
+                           state="hover-look-around"
+                           colors="primary:#121331,secondary:#000000"
+                           style="width:20px;height:20px">
+                </lord-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-3 txtC">
+        <p class="text-center"><a href="/Home/CambioPassword">Hai dimenticato la password?</a></p>
+    </div>
+
+    <div class="mb-5 text-center">
+        <button id="Accedibtn" class="btn btn-primary" style="padding: 10px 20px; font-size: 16px;">
+            Accedi
+        </button>
+    </div>
+</div>
+
+
+
+<script src="https://cdn.lordicon.com/lordicon.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#togglePassword').on('click', function () {
+            var passwordInput = $('#passwordInput');
+            var type = passwordInput.attr('type');
+            passwordInput.attr('type', type === 'password' ? 'text' : 'password');
+        });
+
+        $('#Accedibtn').on('click', function () {
+            var username = $('#username').val();
+            var password = $('#passwordInput').val();
+
+            if (username === '' || password === '') {
+                alert('I campi Nome utente e Password sono obbligatori.');
+                return;
+            } else {
+                $.ajax({
+                    url: '/api/Db/AccessoUtente',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ nomeUtente: username, password: password }),
+                    success: function (response) {
+                        if (response && response.id) {
+                            sessionStorage.setItem('username', username);
+                            sessionStorage.setItem('id', response.id);
+                            window.location.href = '/Home/Meteo';
+                        } else {
+                            alert('Nome utente o password non validi. Si prega di riprovare.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        
+                        alert('Errore durante il tentativo di accesso. Si prega di riprovare.');
+                    }
+                });
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+<div class="container text-center ">
+    <div class="mb-5" >
+        
+        <h1 class="display-4  text-shadow-drop-br">Benvenuto nell'app meteo</h1>
+        <h3 class="mb-4"></h3>
+    </div>
+
+    <div class="animate__animated animate__zoomIn animate__delay-1s">
+        <div class="mb-4">
+            <a href="#" id="accessBtn" class="btn btn-primary btn-icon jello-horizontal" style="text-decoration: none;">
+                <i class="bi bi-box-arrow-in-right"></i> Accedi
+            </a>
+        </div>
+    </div>
+
+    <div class="mb-4 animate__animated animate__zoomIn animate__delay-2s">
+        <h4>Oppure</h4>
+    </div>
+
+    <div class="text-center animate__animated animate__zoomIn animate__delay-3s">
+        <div class="">
+            <a href="/Home/Registrazione" class="btn btn-outline-secondary btn-sm btn-icon heartbeat" id="joinBtn" style="text-decoration: none; color: #6c757d; border-color: #6c757d;">
+                <i class="bi bi-person-plus-fill me-2"></i> Registrati
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#joinBtn').hover(
+            function () {
+                $(this).removeClass('btn-outline-secondary').addClass('btn-primary');
+            },
+            function () {
+                $(this).removeClass('btn-primary').addClass('btn-outline-secondary');
+            }
+        );
+
+        // Controllo dell'accesso automatico quando si fa clic sul pulsante "Accedi"
+        $('#accessBtn').on('click', function () {
+            var jwtToken = sessionStorage.getItem('jwt_token');
+            if (jwtToken) {
+                // Effettua una richiesta per verificare il token
+                $.ajax({
+                    url: '/api/Db/VerifyToken',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ token: jwtToken }),
+                    success: function (response) {
+                        if (response.isValid) {
+                            var username = sessionStorage.getItem('username');
+                            window.location.href = '/Home/Meteo';
+                        } else {
+                            // Se il token non è valido, reindirizza all'accesso
+                            window.location.href = '/Home/Accesso';
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        // In caso di errore, reindirizza all'accesso
+                        window.location.href = '/Home/Accesso';
+                    }
+                });
+            } else {
+                // Se non c'è alcun token memorizzato, reindirizza all'accesso
+                window.location.href = '/Home/Accesso';
+            }
+        });
+    });
+</script>

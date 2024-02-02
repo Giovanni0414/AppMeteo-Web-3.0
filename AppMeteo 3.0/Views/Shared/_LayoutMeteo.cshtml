@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - App Meteo</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .dropdown-menu {
+            position: absolute;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom box-shadow mb-3 navbar-container">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">App Meteo</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                    <!-- Dropdown menu -->
+                    <div class="nav-item dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i id="nomeUtenteMenu" class="bi bi-person-fill"> </i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a id="cancellaUtente" class="dropdown-item cancellazione-utente" href="#">Cancellazione Utente</a>
+                            <div class="dropdown-divider"></div>
+                            <!-- Nuovo menu per la cancellazione dell'utente -->
+                            <div id="cancellazioneUtenteMenu" style="display: none;">
+                                <input id="passwordPerCancellare" class="dropdown-item form-control mb-2" placeholder="Inserisci la password" />
+                                <a class="dropdown-item btn btn-danger mb-2 conferma-cancellazione" href="#">Conferma cancellazione</a>
+                                <a class="dropdown-item btn btn-secondary mb-2 annulla-cancellazione" href="#">Annulla</a>
+                            </div>
+                            <!-- Fine del nuovo menu -->
+                            <!-- Nuovo menu per il cambio password -->
+                            <div id="cambioPasswordMenu" style="display: none;">
+                                <input id="email" class="dropdown-item form-control mb-2" placeholder="Inserisci la tua email" />
+                                <input id="nuovaPassword" class="dropdown-item form-control mb-2" placeholder="Nuova password" />
+                                <a class="dropdown-item btn btn-dark mb-2 cambia-password" href="#">Cambia password</a>
+                                <a class="dropdown-item btn btn-secondary mb-2 annulla-cambio-password" href="#">Annulla</a>
+                            </div>
+                            <!-- Fine del nuovo menu -->
+
+                            <a class="dropdown-item cambio-password menu-cambio-password" href="#" id="cambiaPassA">Cambio Password</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/Home/Amministratore" id="admin" style="display: none;">Dati</a>
+
+                        </div>
+                    </div>
+                    <!-- Fine menu-->
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted fixed-bottom bg-light footer-light">
+        <div class="container text-center text-dark">
+            Made with <i class="bi bi-heart-fill"></i> By GGiovà <a class="text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            // Chiude tutti i menu aperti
+            function chiudiMenu() {
+                $('#cancellazioneUtenteMenu, #cambioPasswordMenu').hide();
+                $('.cambio-password').show(); // Mostra il link "Cambio Password" nel menu principale
+            }
+
+            // Gestore di eventi per il click sul pulsante del dropdown menu
+            $('.dropdown-toggle').on('click', function () {
+                $('.dropdown-menu').toggleClass('show');
+                $('.cambio-password').show();
+                $('#cancellazioneUtenteMenu').hide();
+                $('#cambioPasswordMenu').hide();
+            });
+
+            // Gestore di eventi per l'elemento "Cancellazione Utente"
+            $('.cancellazione-utente').on('click', function () {
+                chiudiMenu(); // Chiude tutti i menu aperti
+                // Mostra il menu "Cancellazione Utente"
+                $('#cancellazioneUtenteMenu').show();
+                $('#cambiaPassA').hide();
+
+            });
+
+            // Gestore di eventi per l'elemento "Annulla Cancellazione"
+            $('.annulla-cancellazione').on('click', function () {
+                $('#cancellazioneUtenteMenu').hide(); // Nasconde il menu "Cancellazione Utente"
+                $('.cambio-password').show(); // Mostra il link "Cambio Password" nel menu principale
+            });
+
+            // Gestore di eventi per l'elemento "Cambio Password"
+            $('.cambio-password').on('click', function () {
+                chiudiMenu(); // Chiude tutti i menu aperti
+                $('#cambioPasswordMenu').show(); // Mostra il menu "Cambio Password"
+                $('.cambio-password').hide();
+                
+            });
+
+            // Gestore di eventi per l'elemento "Conferma cancellazione"
+            $('.conferma-cancellazione').on('click', function () {
+                var username = sessionStorage.getItem('username');
+                var password = $('#passwordPerCancellare').val();
+
+                $.ajax({
+                    url: '/api/Db/EliminaUtente',
+                    method: 'DELETE',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ nomeUtente: username, password: password }),
+                    success: function (response) {
+                        if (response) {
+                            alert('Utente eliminato con successo!');
+                            window.location.href = '/Home/Index';
+                        } else {
+                            alert('Errore durante l\'eliminazione dell\'utente.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('Errore durante l\'eliminazione dell\'utente.');
+                    }
+                });
+            });
+
+            // Gestore di eventi per l'elemento "Cambia Password"
+            $('.cambia-password').on('click', function () {
+                
+                var email = $('#email').val();
+                var password = $('#nuovaPassword').val();
+
+                $.ajax({
+                    url: '/api/Db/CambiaPassword',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ email: email, password: password }),
+                    success: function (response) {
+                        if (response) {
+                            alert('Password Cambiata!');
+                            
+                        } else {
+                            alert('Errore durante il cambio password.');
+                        }
+                        
+                    },
+                 
+                });
+
+            });
+
+            // Gestore di eventi per l'elemento "Annulla Cambio Password"
+            $('.annulla-cambio-password').on('click', function () {
+                $('#cambioPasswordMenu').hide(); // Nasconde il menu "Cambio Password"
+                $('.cambio-password').show(); // Mostra il link "Cambio Password" nel menu principale
+            });
+
+            // Recupera il nome utente memorizzato nel sessionStorage e visualizzalo
+            var username = sessionStorage.getItem('username');
+            if (username) {
+                $('#nomeUtenteMenu').text(' ' + username);
+            }
+            if (username === "admin") {
+
+                $('#admin').show();
+            }
+        });
+    </script>
+</body>
+</html>

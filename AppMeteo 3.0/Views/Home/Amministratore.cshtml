@@ -1,0 +1,142 @@
+﻿@model AmministratoreViewModel
+
+<style>
+
+    .selezionato {
+        background-color: darkslateblue;
+    }
+
+</style>
+
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="text-center">Lista Utenti</h2>
+                    <div>
+                        <a href="/Home/Meteo" class="btn btn-secondary me-2">Torna Indietro</a>
+                        <button id="refreshBtn" class="btn btn-primary">Aggiorna lista utenti</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id Utente</th>
+                                <th scope="col">Nome Utente</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Password</th>
+                                <th scope="col">Stato</th>
+                                <th scope="col">Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var utente in Model.ListaUtenti)
+                            {
+                                <tr class="" data-id="@utente.Id">
+                                    <!-- Aggiungi la classe "selezionabile" e l'attributo data-id -->
+                                    <td>@utente.Id</td>
+                                    <td>@utente.NomeUtente</td>
+                                    <td>@utente.Email</td>
+                                    <td>@utente.Password</td>
+                                    @if (utente.Stato == 1)
+                                    {
+                                        <td class="text-danger">Non attivo</td>
+                                    }
+                                    else
+                                    {
+                                        <td>Attivo</td>
+                                    }
+                                    <td>
+                                        <button class="btn btn-danger elimina-utente" data-nomeutente="@utente.NomeUtente" data-password="@utente.Password">
+                                            <i class="bi bi-trash-fill"></i> Elimina
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col">
+                <h2 class="text-center">Previsioni Meteo</h2>
+                <div class="table-responsive mt-3">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Città</th>
+                                <th scope="col">Temperatura</th>
+                                <th scope="col">Previsioni</th>
+                                <th scope="col">Id Utente</th>
+                                <th scope="col">Data di Ricerca</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var utente in Model.ListaInfo.OrderByDescending(utente => utente.DataRicerca))
+                            {
+                                <tr class="" data-id="@utente.Id">
+                                    <!-- Aggiungi la classe "selezionabile" e l'attributo data-id -->
+                                    <td>@utente.Citta</td>
+                                    <td>@utente.Temperatura</td>
+                                    <td>@utente.Meteo</td>
+                                    <td>@utente.IdUtente</td>
+                                    <td>@utente.DataRicerca</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+<script>
+
+    $(document).ready(function () {
+        $(".elimina-utente").click(function () {
+            var nomeUtente = $(this).data("nomeutente");
+            var password = $(this).data("password");
+            var conferma = confirm("Sei sicuro di voler eliminare l'utente '" + nomeUtente + "'?");
+            if (conferma) {
+                $.ajax({
+                    type: "DELETE",
+                    url: "/api/Db/EliminaUtente",
+                    contentType: 'application/json',
+                    data: JSON.stringify({ nomeUtente: nomeUtente, password: password }),
+                    success: function (response) {
+                        if (response) {
+                            alert('Utente eliminato con successo!');
+                            
+                        } else {
+                            alert('Errore durante l\'eliminazione dell\'utente.');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('Errore durante l\'eliminazione dell\'utente.');
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        
+        $("#refreshBtn").click(function () {
+           
+            location.reload();
+        });
+    });
+
+   
+
+</script>

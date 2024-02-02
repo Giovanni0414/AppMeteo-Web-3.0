@@ -1,0 +1,121 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+
+
+<div class="container-lg">
+    <div class="my-4">
+        <h1 class="text-center">Benvenuto</h1>
+        <h4 class="text-center">Registrati</h4>
+    </div>
+
+    <div class="mb-3">
+        <p class="text-md-center">Email</p>
+    </div>
+    <div class="mb-3 input-group container-md" style="max-width: 400px;">
+        <span class="input-group-text"><i class="bi bi-envelope-at"></i></span>
+        <input type="email" class="form-control" id="email" placeholder="Inserisci la tua email" required>
+    </div>
+
+    <div class="mb-3">
+        <p class="text-md-center">Password</p>
+    </div>
+    <div class="mb-3 input-group container-md" style="max-width: 400px;">
+        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+        <input type="password" class="form-control" id="passwordInput" placeholder="Inserisci la password" required>
+        <button class="btn btn-outline-secondary" type="button" id="togglePasswordReg">
+            <i class="bi bi-eye"></i>
+        </button>
+    </div>
+
+    <div class="mb-3">
+        <p class="text-md-center">Conferma Password</p>
+    </div>
+    <div class="mb-3 input-group container-md" style="max-width: 400px;">
+        <span class="input-group-text"><i class="bi bi-lock"></i></span>
+        <input type="password" class="form-control" id="passwordInputCon" placeholder="Conferma la password" required>
+        <button class="btn btn-outline-secondary" type="button" id="togglePasswordRegCon">
+            <i class="bi bi-eye"></i>
+        </button>
+    </div>
+
+    <div class="mb-3">
+        <p class="text-md-center">Nome Utente</p>
+    </div>
+    <div class="mb-3 input-group container-md" style="max-width: 400px;">
+        <span class="input-group-text"><i class="bi bi-person"></i></span>
+        <input type="text" class="form-control" id="nomeUtente" placeholder="Inserisci il nome utente" required> 
+    </div>
+
+    <div class="mt-4 text-center">
+        <button id="Registratibtn" class="btn btn-primary" style="padding: 10px 20px; font-size: 16px;">
+            Registrati
+        </button>
+    </div>
+</div>
+
+
+
+
+
+
+
+<script>
+
+    $('#togglePasswordReg').on('click', function () {
+        var passwordInput = $('#passwordInput');
+        var type = passwordInput.attr('type');
+
+        // Cambia il tipo dell'input tra 'password' e 'text'
+        passwordInput.attr('type', type === 'password' ? 'text' : 'password');
+    });
+
+    $('#togglePasswordRegCon').on('click', function () {
+        var passwordInput = $('#passwordInputCon');
+        var type = passwordInput.attr('type');
+
+        // Cambia il tipo dell'input tra 'password' e 'text'
+        passwordInput.attr('type', type === 'password' ? 'text' : 'password');
+    });
+
+
+    $('#Registratibtn').on('click', function () {
+        
+        var email = $('#email').val();
+        var password = $('#passwordInput').val();
+        var passwordCon = $('#passwordInputCon').val();
+        var nomeUtente = $('#nomeUtente').val();
+        var stato = 0;
+
+        // Aggiungi qui la logica di validazione desiderata
+        if (email === '' || password === '' || passwordCon === '' || nomeUtente === '') {
+            alert('Inserisci tutti i campi!');
+            return;
+        }
+        else if (password !== passwordCon) {
+            alert('Le due password devono essere uguali ');
+            return;
+        }
+        else {
+
+            $.ajax({
+                url: '/api/Db/RegistraUtente',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({email: email, password: password, nomeUtente: nomeUtente, stato: stato }),
+                success: function (response) {
+                    alert('Utente registrato con successo!');
+                    sessionStorage.setItem('username', nomeUtente);
+                    window.location.href = '/Home/Meteo';
+                },
+                error: function (error) {
+                    alert('Errore durante la registrazione dell\'utente: ' + error.responseText);
+                }
+            });
+
+        }
+    });
+
+
+</script>

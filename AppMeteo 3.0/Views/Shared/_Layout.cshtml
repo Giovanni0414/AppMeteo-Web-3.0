@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - App Meteo</title>   
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-2auqajB2PZwMygLK71mnifl6KI4v1RUUd3UK1iV76TImK1Tet9EgLZykzJV7RxOeP8wKsZsWgUZaQ5GJry/a2Q==" crossorigin="anonymous" />
+    <link rel="shortcut icon" href="../favicon.ico" />
+
+</head>
+
+<body id="bd-L">
+    
+    <header id="bd-L">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" id="navBar">
+            <div class="container-fluid">
+                
+                <a id="btnNav" class="navbar-brand ulNav" asp-area="" asp-controller="Home" asp-action="Index">App Meteo</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1" id="ulNav">
+                        <li class="nav-item">
+                            <a id="btnNav" class="nav-link ulNav" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a id="btnNav" class="nav-link ulNav" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+   
+    <div class="container">
+
+        <main role="main" class="pb-3" id="bd-L">
+            @RenderBody()
+        </main>
+    </div>
+   
+
+
+    <footer class="border-top footer text-muted fixed-bottom bg-light footer-light">
+        <div class="container text-center text-dark">
+            Made with <i class="bi bi-heart-fill"></i> By GGiovà <a class="text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
